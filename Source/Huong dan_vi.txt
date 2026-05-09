@@ -1,0 +1,82 @@
+【 1 】 GIỚI THIỆU
+
+    Tối Ưu Ảnh QH 1.0 là là giải pháp giao diện đồ họa (GUI) được phát triển trên nền tảng ImageMagick, chuyên tối ưu hóa quy trình xử lý ảnh hàng loạt. Phần mềm tập trung vào khả năng nén ảnh thông minh thông qua việc cân bằng giữa hệ số chất lượng và kích thước điểm ảnh. Kết quả thực nghiệm cho thấy dung lượng tệp tin có thể được tối ưu hóa chỉ còn 10-30% so với nguyên bản, trong khi vẫn duy trì độ sắc nét tiệm cận bản gốc.
+
+    Lưu ý kỹ thuật:
+    - Phần mềm bắt buộc cần ImageMagick để vận hành (đã đóng gói kèm). Nếu tệp này bị mất, vui lòng tải bản Portable ("portable-Q16-HDRI-x64" cho 64-bit hoặc "x86" cho 32-bit) tại: https://github.com/ImageMagick/ImageMagick/releases và đặt vào cùng thư mục chương trình.
+    - Để đạt chất lượng AVIF tốt nhất, phần mềm mặc định sử dụng avifenc.exe. Nếu bạn muốn dùng trình xử lý của ImageMagick, chỉ cần xóa avifenc.exe trong thư mục ImageMagick, hệ thống sẽ tự động chuyển đổi phương thức.
+    - Nếu máy tính của bạn đã có ImageMagick và đưa vào biến môi trường (PATH), bạn không cần đặt magick.exe cùng thư mục với phần mềm này. Phần mềm sẽ tự động tìm ImageMagick từ PATH.
+
+【 2 】 ĐỊNH DẠNG HỖ TRỢ
+
+    2.1 Đầu vào: Hỗ trợ các định dạng JPG, JPEG, JPE, JFIF, JIF, PJPEG, PJP, PNG, BMP, TIF, TIFF, ICO, ICON, APNG, WEBP, JXL, AVIF, HEIC, HEIF, GIF
+
+    2.2 Đầu ra: JPG, PNG, TIFF, ICO, AVIF, WEBP, JXL.
+    a) Đối với chế độ "Giữ nguyên định dạng": 
+        - Phần mềm sẽ xuất ra đúng định dạng gốc của ảnh đầu vào. 
+        - Ngoại trừ những định dạng sau sẽ được chuyển đổi sang JPG: JPG, JPEG, JPE, JFIF, JIF, PJPEG, PJP, HEIC, HEIF. 
+        - TIFF, TIF sẽ được chuyển đổi sang TIFF. 
+        - PNG, APNG, BMP, ICO, ICON sẽ được chuyển đổi sang PNG.
+
+    b) Lời khuyên: Thông thường hãy chọn JPG. Nếu cần lưu trữ bảo toàn chi tiết đến từng điểm ảnh (Pixel-perfect), hãy chọn PNG, TIF hoặc các định dạng hiện đại như WEBP, JXL, AVIF ở mức chất lượng 100%.
+
+
+【 3 】 CHẤT LƯỢNG VÀ THAM SỐ
+
+    Mức mặc định 80% phù hợp với hơn 90% nhu cầu thông thường. Bạn có thể tùy chỉnh tăng/giảm theo mục đích sử dụng.
+
+    Cách thức hoạt động:
+    - Với JPG, JXL, WEBP: Chất lượng được điều khiển qua tham số -quality của Magick. Ví dụ: Chọn 75% tương đương -quality 75. Riêng 100% của WEBP và JXL sẽ kích hoạt nén không mất dữ liệu (Lossless).
+
+    - Với AVIF: Để khắc phục nhược điểm cho chất lượng thấp của Magick đối với định dạng này, tác giả ưu tiên dùng avifenc.exe. 
+    Bảng quy đổi dựa trên thực nghiệm (so sánh 1.840 ảnh qua MS-SSIM và Butteraugli và điều chỉnh để đạt chất lượng tương đương JPG):
+        Chọn | avifenc  | magick quality
+        100% | lossless | 100
+        95%  | crf 13   | 95
+        90%  | crf 16   | 90
+        85%  | crf 24   | 80
+        80%  | crf 28   | 70
+        75%  | crf 31   | 60
+        70%  | crf 36   | 50
+        65%  | crf 38   | 48
+        60%  | crf 40   | 44
+        50%  | crf 42   | 40
+        40%  | crf 44   | 36
+        30%  | crf 47   | 30
+        20%  | crf 51   | 20
+        10%  | crf 58   | 10
+
+    - Với ICO và định dạng khác: Magick tự động xử lý.
+
+    Lưu ý: Ở cùng một mức chất lượng, AVIF cho dung lượng nhỏ hơn so với JXL và WEBP.
+
+【 4 】 QUY TẮC THAY ĐỔI KÍCH THƯỚC
+
+    Kích thước tối đa: Là giới hạn cho cạnh dài nhất của ảnh. Ví dụ ảnh gốc 7680x5120, nếu đặt tối đa 3840, ảnh đầu ra sẽ là 3840x2560 (giữ đúng tỷ lệ).
+
+    Giới hạn thu nhỏ: Đây là "chốt chặn" để ảnh không bị thu quá nhỏ, gây mất chi tiết vĩnh viễn. 
+        - Công thức: Kích thước đầu ra không nhỏ hơn (Gốc/Tỷ lệ). 
+        - Ví dụ: Đặt tối đa 3840 nhưng giới hạn tỷ lệ 1.5. Với ảnh gốc 7680, kết quả sẽ là 5120 (vì 7680/1.5 = 5120, lớn hơn mức 3840 bạn muốn).
+
+    Tại sao phải Giới hạn thu nhỏ? Bởi vì có những bức ảnh mà hiện tại bạn muốn thu nhỏ để giảm dung lượng khi lưu trữ, nhưng có thể muốn khôi phục về kích thước gốc sau này. Nếu ảnh gốc lớn và chứa nhiều chi tiết, như ảnh chụp một lễ hội với hàng trăm người, việc thu nhỏ quá mức sẽ dẫn đến hậu quả là ảnh đầu ra vĩnh viễn mất đi các chi tiết nhỏ. Qua kinh nghiệm từng phóng to/thu nhỏ hàng nghìn ảnh, tác giả nhận thấy đối với phần lớn trường hợp, chỉ nên thu nhỏ bằng 1.5 cho đến 2 lần kích thước gốc. Tuy nhiên, nếu ảnh của bạn chỉ gồm các chi tiết lớn thì hoàn toàn có thể thu nhỏ hơn nữa.
+
+    Nếu Giới hạn thu nhỏ được đặt thành 1, kích thước ảnh đầu ra sẽ không được nhỏ hơn (Kích thước ảnh gốc)/1, đồng nghĩa với việc giữ nguyên kích thước gốc. 
+
+【 5 】 MẸO VÀ BÁO LỖI
+
+    Bạn có thể kéo và thả tệp ảnh hoặc thư mục chứa ảnh vào phần mềm, danh sách các ảnh hợp lệ sẽ được liệt kê và sẵn sàng chuyển đổi.
+
+    Nếu bạn gặp lỗi "Không thể đọc ảnh gốc hoặc ghi ảnh đã chuyển đổi vào ổ đĩa" thì có thể do một trong các nguyên nhân:
+        - Ảnh gốc đã bị thu hồi quyền đọc hoặc bị khóa.
+        - Không có quyền lưu ảnh đã chuyển đổi vào ổ đĩa của ảnh gốc.
+        - Ổ đĩa đã đầy nên không thể lưu ảnh đã chuyển đổi.
+    
+【 6 】 VỀ TÁC GIẢ
+
+    Phần mềm Tối Ưu Ảnh QH 1.0 được viết bởi facebook.com/nqhaivn/, phát hành ngày 24/03/2026.
+
+    Mọi hành vi chỉnh sửa lại mã nguồn mà chưa được sự đồng ý bằng văn bản của tác giả thì đều là trộm cắp.
+
+    Mọi góp ý, báo lỗi, có nhu cầu tùy chỉnh phần mềm theo sở thích của bản thân hoặc muốn đề nghị thiết kế phần mềm khác, vui lòng liên lạc với email: nqhai86@gmail.com
+
+    Trân trọng!

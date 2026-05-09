@@ -1,0 +1,84 @@
+【 1 】 INTRODUCTION
+
+    QH Image Optimizer 1.0 is a Graphical User Interface (GUI) solution developed on the ImageMagick platform, specialized for optimizing batch image processing workflows. The software focuses on intelligent image compression by balancing quality factors and pixel dimensions. Experimental results show that file sizes can be optimized to just 10-30% of the original while maintaining sharpness near-identical to the source.
+
+    Technical Notes:
+    - ImageMagick is required for operation (pre-packaged). If this file is missing, please download the Portable version ("portable-Q16-HDRI-x64" for 64-bit or "x86" for 32-bit) at: https://github.com/ImageMagick/ImageMagick/releases and place it in the same program directory.
+    - To achieve the best AVIF quality, the software defaults to using avifenc.exe. If you prefer to use ImageMagick's processor, simply delete avifenc.exe; the system will automatically switch methods.
+    - If ImageMagick is already installed and added to your system's Environment Variables (PATH), you do not need to place magick.exe in the program folder. The software will automatically detect and use ImageMagick from the PATH.
+
+【 2 】 SUPPORTED FORMATS
+
+    2.1 Input: Supports JPG, JPEG, JPE, JFIF, JIF, PJPEG, PJP, PNG, BMP, TIF, TIFF, ICO, ICON, APNG, WEBP, JXL, AVIF, HEIC, HEIF, GIF.
+
+    2.2 Output: JPG, PNG, TIFF, ICO, AVIF, WEBP, JXL.
+    a) For "Keep original format" mode: 
+        - The software will output the exact original format of the input image. 
+        - Except for the following formats, which will be converted to JPG: JPG, JPEG, JPE, JFIF, JIF, PJPEG, PJP, HEIC, HEIF. 
+        - TIFF and TIF will be converted to TIFF. 
+        - PNG, APNG, BMP, ICO, ICON will be converted to PNG.
+    b) Advice: Generally, choose JPG. If you need pixel-perfect preservation, select PNG, TIF, or modern formats like WEBP, JXL, and AVIF at 100% quality.
+
+
+【 3 】 QUALITY AND PARAMETERS
+
+    The default level of 80% is suitable for over 90% of common needs. You can customize this up or down based on your purpose.
+
+    How it works:
+    - For JPG, JXL, WEBP: Quality is controlled via Magick's -quality parameter. Example: Selecting 75% is equivalent to -quality 75. Note that 100% for WEBP and JXL will activate Lossless compression.
+
+    - For AVIF: To overcome Magick's low-quality drawbacks for this format, the author prioritizes avifenc.exe.
+    Conversion table based on experiments (comparing 1,840 images via MS-SSIM and Butteraugli, adjusted to match JPG quality):
+        Chọn | avifenc  | magick quality
+        100% | lossless | 100
+        95%  | crf 13   | 95
+        90%  | crf 16   | 90
+        85%  | crf 24   | 80
+        80%  | crf 28   | 70
+        75%  | crf 31   | 60
+        70%  | crf 36   | 50
+        65%  | crf 38   | 48
+        60%  | crf 40   | 44
+        50%  | crf 42   | 40
+        40%  | crf 44   | 36
+        30%  | crf 47   | 30
+        20%  | crf 51   | 20
+        10%  | crf 58   | 10
+
+    - For ICO and other formats: Magick handles these automatically.
+
+    Note: At equivalent quality levels, AVIF achieves higher compression efficiency than JXL and WEBP.
+
+
+【 4 】 RESIZING RULES
+
+    Max Resolution: The limit for the longest side of the image. For example, if the original is 7680x5120 and Max Resolution is set to 3840, the output will be 3840x2560 (maintaining aspect ratio).
+
+    Downscale Limit: This is a "safety stop" to prevent images from being shrunk too small, causing permanent loss of detail.
+        - Formula: Output size will not be smaller than (Original/Ratio).
+        - Example: Max Resolution set to 3840 but Downscale Limit is 1.5. For a 7680px original, the result will be 5120px (because 7680/1.5 = 5120, which is larger than your desired 3840).
+
+    Why limit the scale ratio? You might want to shrink images now to save storage but may wish to restore them to original size later. If an original image is large and highly detailed (e.g., a festival photo with hundreds of people), over-shrinking will permanently erase fine details. Based on experience scaling thousands of images, the author recommends shrinking by only 1.5 to 2 times the original size in most cases. However, if your image only contains large details, you can shrink it further.
+
+    If the Downscale Limit is set to 1, the output size will not be smaller than (Original Size)/1, which effectively keeps the original dimensions.
+
+
+【 5 】 TIPS AND ERROR REPORTS
+
+    You can drag and drop image files or folders containing images into the software; the list of valid images will be populated and ready for conversion.
+
+    If you encounter the error "Unable to read the original image or write the converted image to the disk," it may be due to:
+        - The original image has restricted read permissions or is locked.
+        - No permission to save the converted image to the original disk/folder.
+        - The disk is full, preventing the converted image from being saved.
+
+
+【 6 】 ABOUT THE AUTHOR
+
+    QH Image Optimizer 1.0 was written by facebook.com/nqhaivn/, released on March 24, 2026.
+
+    Any act of modifying the source code without written consent from the author is considered theft.
+
+    For suggestions, bug reports, software customization requests, or other software design inquiries, please contact email: nqhai86@gmail.com
+
+    Sincerely!
